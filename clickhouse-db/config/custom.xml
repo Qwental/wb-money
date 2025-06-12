@@ -1,0 +1,8 @@
+<clickhouse>
+    <logger>
+        <level>information</level>
+        <console>1</console>
+    </logger>
+    <listen_host>0.0.0.0</listen_host>
+    <skip_check_for_incorrect_settings>1</skip_check_for_incorrect_settings>
+</clickhouse>

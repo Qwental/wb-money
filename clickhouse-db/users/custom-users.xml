@@ -1,0 +1,14 @@
+<clickhouse>
+    <profiles>
+        <default>
+            <max_memory_usage>10000000000</max_memory_usage>
+        </default>
+    </profiles>
+    
+    <users>
+        <default>
+            <access_management>1</access_management>
+            <profile>default</profile>
+        </default>
+    </users>
+</clickhouse>

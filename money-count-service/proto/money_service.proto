@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package money_service;
+
+option go_package = "./pkg/proto";
+// сервис подсчета денег
+service MoneyService {
+  // получаем сколько бы сэкономил пользователь
+  rpc GetSavings(GetSavingsRequest) returns (GetSavingsResponse);}
+
+// запрос на получение
+message GetSavingsRequest {
+  int64 user_id = 1;
+}
+
+// ответ
+message GetSavingsResponse {
+  double total_savings = 1;
+  string currency = 2;
+}
