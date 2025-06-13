@@ -117,6 +117,7 @@ func main() {
 					_, err := w.Write([]byte("OK"))
 					if err != nil {
 						return
+
 					}
 					return
 				}
