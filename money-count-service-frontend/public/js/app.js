@@ -1,5 +1,4 @@
 const client = new proto.money_service.MoneyServiceClient("http://localhost:3000/grpc");
-//const client = new proto.money_service.MoneyServiceClient('http://money-service:50051');
 document.addEventListener('DOMContentLoaded', () => {
     const calculateBtn = document.getElementById('calculateBtn');
     const userIdInput = document.getElementById('userId');
@@ -23,7 +22,6 @@ async function calculateSavings() {
     console.log(`[UI] Введённый userId: "${userId}"`);
 
     if (!userId || isNaN(userId) || Number(userId) <= 0) {
-        console.warn('[UI] Некорректный userId — показываем ошибку');
         showError('Пожалуйста, введите корректный ID пользователя (положительное число)');
         return;
     }
@@ -32,23 +30,31 @@ async function calculateSavings() {
     showLoading();
 
     try {
-        console.log('[RPC] Отправка запроса в gRPC...');
         const data = await getSavings(userId);
-        console.log('[RPC] Получен ответ:', data);
         hideLoading();
 
-        // Проверяем статус ответа
         if (data.status === 'OK') {
-            showResult(data);
+            if (data.wbCardPurchases > 0) {
+                showResult(data);
+            } else {
+                showError('У пользователя нет заказов, оплаченных WB-кошельком');
+            }
+        } else if (data.status === 'NO_PURCHASES') {
+            showError('У пользователя нет покупок');
         } else {
             showError(getErrorMessage(data.status, data.message));
         }
     } catch (error) {
-        console.error('[RPC] Ошибка при запросе:', error);
         hideLoading();
-        showError(error.message || 'Ошибка при получении данных');
+        if (error.code === 13 || error.message.includes('500')) {
+            showError('Ошибка на сервере');
+        } else {
+            showError(error.message || 'Ошибка при получении данных');
+        }
     }
 }
+
+
 
 function getSavings(userId) {
     const request = new proto.money_service.GetSavingsRequest();
@@ -116,41 +122,28 @@ function getErrorMessage(status, serverMessage) {
 }
 
 function showResult(data) {
-    // Основная сумма экономии
     const savingsAmount = document.getElementById('savingsAmount');
     const savingsValue = data.totalSavings;
 
-    // Определяем цвет и знак для отображения
     if (savingsValue > 0) {
         savingsAmount.textContent = `+${savingsValue.toLocaleString()} ${data.currency}`;
-        savingsAmount.style.color = '#22c55e'; // зеленый для экономии
+        savingsAmount.style.color = '#22c55e';
         savingsAmount.classList.add('positive');
         savingsAmount.classList.remove('negative');
     } else if (savingsValue < 0) {
         savingsAmount.textContent = `${savingsValue.toLocaleString()} ${data.currency}`;
-        savingsAmount.style.color = '#ef4444'; // красный для переплат
+        savingsAmount.style.color = '#ef4444';
         savingsAmount.classList.add('negative');
         savingsAmount.classList.remove('positive');
     } else {
         savingsAmount.textContent = `${savingsValue.toLocaleString()} ${data.currency}`;
-        savingsAmount.style.color = '#6b7280'; // серый для нуля
+        savingsAmount.style.color = '#6b7280';
         savingsAmount.classList.remove('positive', 'negative');
     }
 
-    // Статистика покупок
     document.getElementById('totalOrders').textContent = data.totalPurchases.toLocaleString();
     document.getElementById('totalSpent').textContent = data.wbCardPurchases.toLocaleString();
 
-    // Дополнительное сообщение от сервера (если есть)
-    const messageElement = document.getElementById('serverMessage');
-    if (data.message && messageElement) {
-        messageElement.textContent = data.message;
-        messageElement.style.display = 'block';
-    } else if (messageElement) {
-        messageElement.style.display = 'none';
-    }
-
-    // Показываем результат
     document.getElementById('result').style.display = 'block';
     document.getElementById('stats').style.display = 'grid';
 
@@ -161,6 +154,7 @@ function showResult(data) {
         wbCardPurchases: data.wbCardPurchases
     });
 }
+
 
 function showError(message) {
     const errorElement = document.getElementById('error');

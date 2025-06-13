@@ -19,7 +19,7 @@ func NewMoneyHandler(svc *service.MoneyService) *MoneyHandler {
 
 func (h *MoneyHandler) GetSavings(ctx context.Context, req *proto.GetSavingsRequest) (*proto.GetSavingsResponse, error) {
 	// Логируем входящий запрос
-	log.Printf("Получен запрос GetSavings для пользователя: %d", req.UserId)
+	log.Printf("- запрос GetSavings для пользователя: %d", req.UserId)
 
 	// Валидация запроса
 	if req.UserId <= 0 {
@@ -41,8 +41,8 @@ func (h *MoneyHandler) GetSavings(ctx context.Context, req *proto.GetSavingsRequ
 	}
 
 	// Логируем результат
-	log.Printf("Результат для пользователя %d: статус=%s, экономия=%.2f, покупок=%d",
-		req.UserId, response.Status.String(), response.TotalSavings, response.TotalPurchases)
+	log.Printf("- Результат для пользователя %d: статус=%s, экономия=%.2f, покупок=%d, wb=%d",
+		req.UserId, response.Status.String(), response.TotalSavings, response.TotalPurchases, response.WbCardPurchases)
 
 	return response, nil
 }

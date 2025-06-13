@@ -58,6 +58,7 @@ func (s *MoneyService) GetSavings(ctx context.Context, userID uint64) (*proto.Ge
         FROM product_events
         WHERE user_id = ? AND event_name = 'buy'
     `
+
 	rows, err := s.db.QueryxContext(ctx, query, userID)
 	if err != nil {
 		log.Printf("Ошибка выполнения запроса для пользователя %d: %v", userID, err)
@@ -66,6 +67,7 @@ func (s *MoneyService) GetSavings(ctx context.Context, userID uint64) (*proto.Ge
 			Message: "Ошибка получения данных о покупках",
 		}, nil
 	}
+
 	defer func(rows *sqlx.Rows) {
 		err := rows.Close()
 		if err != nil {
@@ -100,7 +102,9 @@ func (s *MoneyService) GetSavings(ctx context.Context, userID uint64) (*proto.Ge
 		// Если метод оплаты не кошелёк, добавляем 3% от суммы к экономии
 		if event.PaymentMethod != "wallet" {
 			totalSavings += event.Amount * 0.03
+		} else if event.PaymentMethod == "wallet" {
 			wbCardPurchases++
+			log.Printf("event.PaymentMethod = %s, wbCardPurchases%d\n", event.PaymentMethod, wbCardPurchases)
 		}
 	}
 
