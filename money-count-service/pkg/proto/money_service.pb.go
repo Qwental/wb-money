@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v5.29.3
-// source: proto/money_service.proto
+// source: money_service.proto
 
 package proto
 
@@ -21,7 +21,67 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// запрос на получение
+type GetSavingsResponse_Status int32
+
+const (
+	GetSavingsResponse_OK              GetSavingsResponse_Status = 0 // Всё норм, данные есть
+	GetSavingsResponse_USER_NOT_FOUND  GetSavingsResponse_Status = 1 // Пользователь не найден
+	GetSavingsResponse_NO_PURCHASES    GetSavingsResponse_Status = 2 // Нет покупок у пользователя
+	GetSavingsResponse_DB_ERROR        GetSavingsResponse_Status = 3 // Ошибка базы данных
+	GetSavingsResponse_INVALID_REQUEST GetSavingsResponse_Status = 4 // Некорректный запрос
+	GetSavingsResponse_UNAUTHORIZED    GetSavingsResponse_Status = 5 // Нет доступа к данным пользователя
+	GetSavingsResponse_UNKNOWN_ERROR   GetSavingsResponse_Status = 6 // Неизвестная ошибка
+)
+
+// Enum value maps for GetSavingsResponse_Status.
+var (
+	GetSavingsResponse_Status_name = map[int32]string{
+		0: "OK",
+		1: "USER_NOT_FOUND",
+		2: "NO_PURCHASES",
+		3: "DB_ERROR",
+		4: "INVALID_REQUEST",
+		5: "UNAUTHORIZED",
+		6: "UNKNOWN_ERROR",
+	}
+	GetSavingsResponse_Status_value = map[string]int32{
+		"OK":              0,
+		"USER_NOT_FOUND":  1,
+		"NO_PURCHASES":    2,
+		"DB_ERROR":        3,
+		"INVALID_REQUEST": 4,
+		"UNAUTHORIZED":    5,
+		"UNKNOWN_ERROR":   6,
+	}
+)
+
+func (x GetSavingsResponse_Status) Enum() *GetSavingsResponse_Status {
+	p := new(GetSavingsResponse_Status)
+	*p = x
+	return p
+}
+
+func (x GetSavingsResponse_Status) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GetSavingsResponse_Status) Descriptor() protoreflect.EnumDescriptor {
+	return file_money_service_proto_enumTypes[0].Descriptor()
+}
+
+func (GetSavingsResponse_Status) Type() protoreflect.EnumType {
+	return &file_money_service_proto_enumTypes[0]
+}
+
+func (x GetSavingsResponse_Status) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GetSavingsResponse_Status.Descriptor instead.
+func (GetSavingsResponse_Status) EnumDescriptor() ([]byte, []int) {
+	return file_money_service_proto_rawDescGZIP(), []int{1, 0}
+}
+
 type GetSavingsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -31,7 +91,7 @@ type GetSavingsRequest struct {
 
 func (x *GetSavingsRequest) Reset() {
 	*x = GetSavingsRequest{}
-	mi := &file_proto_money_service_proto_msgTypes[0]
+	mi := &file_money_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +103,7 @@ func (x *GetSavingsRequest) String() string {
 func (*GetSavingsRequest) ProtoMessage() {}
 
 func (x *GetSavingsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_money_service_proto_msgTypes[0]
+	mi := &file_money_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +116,7 @@ func (x *GetSavingsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSavingsRequest.ProtoReflect.Descriptor instead.
 func (*GetSavingsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_money_service_proto_rawDescGZIP(), []int{0}
+	return file_money_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetSavingsRequest) GetUserId() int64 {
@@ -66,18 +126,21 @@ func (x *GetSavingsRequest) GetUserId() int64 {
 	return 0
 }
 
-// ответ
 type GetSavingsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TotalSavings  float64                `protobuf:"fixed64,1,opt,name=total_savings,json=totalSavings,proto3" json:"total_savings,omitempty"`
-	Currency      string                 `protobuf:"bytes,2,opt,name=currency,proto3" json:"currency,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState    `protogen:"open.v1"`
+	Status          GetSavingsResponse_Status `protobuf:"varint,1,opt,name=status,proto3,enum=money_service.GetSavingsResponse_Status" json:"status,omitempty"`
+	TotalSavings    float64                   `protobuf:"fixed64,2,opt,name=total_savings,json=totalSavings,proto3" json:"total_savings,omitempty"` // Итоговая сумма сэкономленных денег (может быть отрицательной)
+	Currency        string                    `protobuf:"bytes,3,opt,name=currency,proto3" json:"currency,omitempty"`
+	TotalPurchases  int32                     `protobuf:"varint,4,opt,name=total_purchases,json=totalPurchases,proto3" json:"total_purchases,omitempty"`      // Количество всех покупок
+	WbCardPurchases int32                     `protobuf:"varint,5,opt,name=wb_card_purchases,json=wbCardPurchases,proto3" json:"wb_card_purchases,omitempty"` // Кол-во покупок, совершенных картой WB
+	Message         string                    `protobuf:"bytes,6,opt,name=message,proto3" json:"message,omitempty"`                                           // Доп. сообщение (опционально)
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *GetSavingsResponse) Reset() {
 	*x = GetSavingsResponse{}
-	mi := &file_proto_money_service_proto_msgTypes[1]
+	mi := &file_money_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -89,7 +152,7 @@ func (x *GetSavingsResponse) String() string {
 func (*GetSavingsResponse) ProtoMessage() {}
 
 func (x *GetSavingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_money_service_proto_msgTypes[1]
+	mi := &file_money_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -102,7 +165,14 @@ func (x *GetSavingsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSavingsResponse.ProtoReflect.Descriptor instead.
 func (*GetSavingsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_money_service_proto_rawDescGZIP(), []int{1}
+	return file_money_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetSavingsResponse) GetStatus() GetSavingsResponse_Status {
+	if x != nil {
+		return x.Status
+	}
+	return GetSavingsResponse_OK
 }
 
 func (x *GetSavingsResponse) GetTotalSavings() float64 {
@@ -119,67 +189,104 @@ func (x *GetSavingsResponse) GetCurrency() string {
 	return ""
 }
 
-var File_proto_money_service_proto protoreflect.FileDescriptor
+func (x *GetSavingsResponse) GetTotalPurchases() int32 {
+	if x != nil {
+		return x.TotalPurchases
+	}
+	return 0
+}
 
-const file_proto_money_service_proto_rawDesc = "" +
+func (x *GetSavingsResponse) GetWbCardPurchases() int32 {
+	if x != nil {
+		return x.WbCardPurchases
+	}
+	return 0
+}
+
+func (x *GetSavingsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+var File_money_service_proto protoreflect.FileDescriptor
+
+const file_money_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19proto/money_service.proto\x12\rmoney_service\",\n" +
+	"\x13money_service.proto\x12\rmoney_service\",\n" +
 	"\x11GetSavingsRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\"U\n" +
-	"\x12GetSavingsResponse\x12#\n" +
-	"\rtotal_savings\x18\x01 \x01(\x01R\ftotalSavings\x12\x1a\n" +
-	"\bcurrency\x18\x02 \x01(\tR\bcurrency2a\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"\x86\x03\n" +
+	"\x12GetSavingsResponse\x12@\n" +
+	"\x06status\x18\x01 \x01(\x0e2(.money_service.GetSavingsResponse.StatusR\x06status\x12#\n" +
+	"\rtotal_savings\x18\x02 \x01(\x01R\ftotalSavings\x12\x1a\n" +
+	"\bcurrency\x18\x03 \x01(\tR\bcurrency\x12'\n" +
+	"\x0ftotal_purchases\x18\x04 \x01(\x05R\x0etotalPurchases\x12*\n" +
+	"\x11wb_card_purchases\x18\x05 \x01(\x05R\x0fwbCardPurchases\x12\x18\n" +
+	"\amessage\x18\x06 \x01(\tR\amessage\"~\n" +
+	"\x06Status\x12\x06\n" +
+	"\x02OK\x10\x00\x12\x12\n" +
+	"\x0eUSER_NOT_FOUND\x10\x01\x12\x10\n" +
+	"\fNO_PURCHASES\x10\x02\x12\f\n" +
+	"\bDB_ERROR\x10\x03\x12\x13\n" +
+	"\x0fINVALID_REQUEST\x10\x04\x12\x10\n" +
+	"\fUNAUTHORIZED\x10\x05\x12\x11\n" +
+	"\rUNKNOWN_ERROR\x10\x062a\n" +
 	"\fMoneyService\x12Q\n" +
 	"\n" +
 	"GetSavings\x12 .money_service.GetSavingsRequest\x1a!.money_service.GetSavingsResponseB\rZ\v./pkg/protob\x06proto3"
 
 var (
-	file_proto_money_service_proto_rawDescOnce sync.Once
-	file_proto_money_service_proto_rawDescData []byte
+	file_money_service_proto_rawDescOnce sync.Once
+	file_money_service_proto_rawDescData []byte
 )
 
-func file_proto_money_service_proto_rawDescGZIP() []byte {
-	file_proto_money_service_proto_rawDescOnce.Do(func() {
-		file_proto_money_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_money_service_proto_rawDesc), len(file_proto_money_service_proto_rawDesc)))
+func file_money_service_proto_rawDescGZIP() []byte {
+	file_money_service_proto_rawDescOnce.Do(func() {
+		file_money_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_money_service_proto_rawDesc), len(file_money_service_proto_rawDesc)))
 	})
-	return file_proto_money_service_proto_rawDescData
+	return file_money_service_proto_rawDescData
 }
 
-var file_proto_money_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_proto_money_service_proto_goTypes = []any{
-	(*GetSavingsRequest)(nil),  // 0: money_service.GetSavingsRequest
-	(*GetSavingsResponse)(nil), // 1: money_service.GetSavingsResponse
+var file_money_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_money_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_money_service_proto_goTypes = []any{
+	(GetSavingsResponse_Status)(0), // 0: money_service.GetSavingsResponse.Status
+	(*GetSavingsRequest)(nil),      // 1: money_service.GetSavingsRequest
+	(*GetSavingsResponse)(nil),     // 2: money_service.GetSavingsResponse
 }
-var file_proto_money_service_proto_depIdxs = []int32{
-	0, // 0: money_service.MoneyService.GetSavings:input_type -> money_service.GetSavingsRequest
-	1, // 1: money_service.MoneyService.GetSavings:output_type -> money_service.GetSavingsResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+var file_money_service_proto_depIdxs = []int32{
+	0, // 0: money_service.GetSavingsResponse.status:type_name -> money_service.GetSavingsResponse.Status
+	1, // 1: money_service.MoneyService.GetSavings:input_type -> money_service.GetSavingsRequest
+	2, // 2: money_service.MoneyService.GetSavings:output_type -> money_service.GetSavingsResponse
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_proto_money_service_proto_init() }
-func file_proto_money_service_proto_init() {
-	if File_proto_money_service_proto != nil {
+func init() { file_money_service_proto_init() }
+func file_money_service_proto_init() {
+	if File_money_service_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_money_service_proto_rawDesc), len(file_proto_money_service_proto_rawDesc)),
-			NumEnums:      0,
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_money_service_proto_rawDesc), len(file_money_service_proto_rawDesc)),
+			NumEnums:      1,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_money_service_proto_goTypes,
-		DependencyIndexes: file_proto_money_service_proto_depIdxs,
-		MessageInfos:      file_proto_money_service_proto_msgTypes,
+		GoTypes:           file_money_service_proto_goTypes,
+		DependencyIndexes: file_money_service_proto_depIdxs,
+		EnumInfos:         file_money_service_proto_enumTypes,
+		MessageInfos:      file_money_service_proto_msgTypes,
 	}.Build()
-	File_proto_money_service_proto = out.File
-	file_proto_money_service_proto_goTypes = nil
-	file_proto_money_service_proto_depIdxs = nil
+	File_money_service_proto = out.File
+	file_money_service_proto_goTypes = nil
+	file_money_service_proto_depIdxs = nil
 }

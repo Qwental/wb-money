@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.3
-// source: proto/money_service.proto
+// source: money_service.proto
 
 package proto
 
@@ -25,10 +25,7 @@ const (
 // MoneyServiceClient is the client API for MoneyService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// сервис подсчета денег
 type MoneyServiceClient interface {
-	// получаем сколько бы сэкономил пользователь
 	GetSavings(ctx context.Context, in *GetSavingsRequest, opts ...grpc.CallOption) (*GetSavingsResponse, error)
 }
 
@@ -53,10 +50,7 @@ func (c *moneyServiceClient) GetSavings(ctx context.Context, in *GetSavingsReque
 // MoneyServiceServer is the server API for MoneyService service.
 // All implementations must embed UnimplementedMoneyServiceServer
 // for forward compatibility.
-//
-// сервис подсчета денег
 type MoneyServiceServer interface {
-	// получаем сколько бы сэкономил пользователь
 	GetSavings(context.Context, *GetSavingsRequest) (*GetSavingsResponse, error)
 	mustEmbedUnimplementedMoneyServiceServer()
 }
@@ -123,5 +117,5 @@ var MoneyService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/money_service.proto",
+	Metadata: "money_service.proto",
 }
