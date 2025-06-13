@@ -1,5 +1,5 @@
 const client = new proto.money_service.MoneyServiceClient("http://localhost:3000/grpc");
-
+//const client = new proto.money_service.MoneyServiceClient('http://money-service:50051');
 document.addEventListener('DOMContentLoaded', () => {
     const calculateBtn = document.getElementById('calculateBtn');
     const userIdInput = document.getElementById('userId');

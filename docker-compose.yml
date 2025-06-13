@@ -60,6 +60,9 @@ services:
     restart: unless-stopped
     networks:
       - clickhouse-network
+      - app-network
+
+
   money-count-service-frontend:
     build:
       context: ./money-count-service-frontend
@@ -70,14 +73,17 @@ services:
       - "3000:3000"  # Порт для фронтенда
     environment:
       - NODE_ENV=development
-      - USE_MOCKS=true  # Включение моков для автономной работы
+      - USE_MOCKS=false  # Отключение моков для работы с бэкендом
+      - GRPC_WEB_HOST=money-service  # Хост бэкенда
+      - GRPC_WEB_PORT=8080  # Порт gRPC-Web
     volumes:
       - ./money-count-service-frontend:/app
       - /app/node_modules
     command: npm start
     networks:
-      - clickhouse-network
-
+     - app-network
 networks:
   clickhouse-network:
+    driver: bridge
+  app-network:
     driver: bridge

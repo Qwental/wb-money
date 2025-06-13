@@ -26,14 +26,38 @@ app.use((req, res, next) => {
 });
 
 // 🔹 Прокси gRPC-Web → gRPC-Web сервер (порт 8080, а не 50051!)
+// app.use('/grpc', createProxyMiddleware({
+//     target: 'http://localhost:8080', // ← Изменено с 50051 на 8080
+//     changeOrigin: true,
+//     pathRewrite: { '^/grpc': '' },
+//     onProxyReq: (proxyReq, req) => {
+//         console.log(`[PROXY] ${req.method} ${req.url} → http://localhost:8080${req.url.replace('/grpc', '')}`);
+//
+//         // Сохраняем важные заголовки для gRPC-Web
+//         if (req.headers['content-type']) {
+//             proxyReq.setHeader('Content-Type', req.headers['content-type']);
+//         }
+//         if (req.headers['x-grpc-web']) {
+//             proxyReq.setHeader('X-Grpc-Web', req.headers['x-grpc-web']);
+//         }
+//         if (req.headers['x-user-agent']) {
+//             proxyReq.setHeader('X-User-Agent', req.headers['x-user-agent']);
+//         }
+//     },
+//     onProxyRes: (proxyRes, req, res) => {
+//         console.log(`[PROXY] Response: ${proxyRes.statusCode} for ${req.method} ${req.url}`);
+//     },
+//     onError: (err, req, res) => {
+//         console.error(`[PROXY] Error for ${req.method} ${req.url}:`, err.message);
+//         res.status(502).json({ error: 'Proxy error', details: err.message });
+//     }
+// }));
 app.use('/grpc', createProxyMiddleware({
-    target: 'http://localhost:8080', // ← Изменено с 50051 на 8080
+    target: 'http://money-service:8080',  // Используем имя сервиса и порт gRPC-Web
     changeOrigin: true,
     pathRewrite: { '^/grpc': '' },
     onProxyReq: (proxyReq, req) => {
-        console.log(`[PROXY] ${req.method} ${req.url} → http://localhost:8080${req.url.replace('/grpc', '')}`);
-
-        // Сохраняем важные заголовки для gRPC-Web
+        console.log(`[PROXY] ${req.method} ${req.url} → http://money-service:8080${req.url.replace('/grpc', '')}`);
         if (req.headers['content-type']) {
             proxyReq.setHeader('Content-Type', req.headers['content-type']);
         }
