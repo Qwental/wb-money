@@ -1,7 +1,7 @@
 # Git
 .git
 .gitignore
-
+node_modules *.log
 # Documentation
 README.md
 docs/

@@ -20,7 +20,7 @@ services:
         soft: 262144
         hard: 262144
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping" ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -52,12 +52,29 @@ services:
       clickhouse:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "timeout", "5s", "sh", "-c", "</dev/tcp/localhost/50051"]
+      test: [ "CMD", "timeout", "5s", "sh", "-c", "</dev/tcp/localhost/50051" ]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    networks:
+      - clickhouse-network
+  money-count-service-frontend:
+    build:
+      context: ./money-count-service-frontend
+      dockerfile: Dockerfile
+    container_name: wb-money-frontend
+    hostname: frontend
+    ports:
+      - "3000:3000"  # Порт для фронтенда
+    environment:
+      - NODE_ENV=development
+      - USE_MOCKS=true  # Включение моков для автономной работы
+    volumes:
+      - ./money-count-service-frontend:/app
+      - /app/node_modules
+    command: npm start
     networks:
       - clickhouse-network
 
