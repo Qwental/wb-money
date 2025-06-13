@@ -34,10 +34,10 @@ async function calculateSavings() {
         hideLoading();
 
         if (data.status === 'OK') {
-            if (data.wbCardPurchases > 0) {
+            if (data.totalPurchases > 0) {
                 showResult(data);
             } else {
-                showError('У пользователя нет заказов, оплаченных WB-кошельком');
+                showError('У пользователя нет покупок');
             }
         } else if (data.status === 'NO_PURCHASES') {
             showError('У пользователя нет покупок');
