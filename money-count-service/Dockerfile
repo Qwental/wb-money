@@ -1,29 +1,33 @@
-# Многоэтапная сборка для оптимизации размера образа
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
-# Устанавливаем необходимые пакеты для сборки
+# устанавливаем пакеты
 RUN apk add --no-cache git protobuf protobuf-dev
 
-# Устанавливаем protoc плагины для Go
+# устанавливаем protoc
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
-# Создаем рабочую директорию
+# рабочая директория
 WORKDIR /app
 
-# Копируем go.mod и go.sum для кэширования зависимостей
+# копируем go.mod и go.sum для кэширования зависимостей
 COPY go.mod go.sum ./
 
-# Загружаем зависимости
+# загружаем зависимости
 RUN go mod download
 
-# Копируем исходный код
+# копируем gen_backend_proto.sh explicitly
+COPY gen_backend_proto.sh .
+RUN chmod +x gen_backend_proto.sh
+RUN ls -la /app  # Debug: Confirm file presence
+
+# копируем остальной исходный код
 COPY . .
 
-# Генерируем proto файлы
-RUN chmod +x gen_backend_proto.sh && ./gen_backend_proto.sh
+# запускаем скрипт генерации
+RUN ./gen_backend_proto.sh
 
-# Собираем приложение
+# собираем приложение
 RUN CGO_ENABLED=0 go build -ldflags="-w -s" -o bin/money-service cmd/server/main.go
 
 # Финальный образ
@@ -47,8 +51,8 @@ RUN chmod +x money-service
 # Переключаемся на пользователя appuser
 USER appuser
 
-# Экспонируем порт (измените если нужен другой)
-EXPOSE 50051
+# Экспонируем порты
+EXPOSE 50051 8080
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \

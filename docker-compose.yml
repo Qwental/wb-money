@@ -28,6 +28,39 @@ services:
     networks:
       - clickhouse-network
 
+  money-service:
+    build:
+      context: ./money-count-service
+      dockerfile: Dockerfile
+    container_name: wb-money-service
+    hostname: money-service
+    ports:
+      - "50051:50051"  # gRPC порт
+      - "8080:8080"    # gRPC-Web порт для фронтенда
+    environment:
+      # Настройки для подключения к ClickHouse
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 9000
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ""
+      # Настройки gRPC сервера
+      GRPC_PORT: 50051
+      GRPC_HOST: "0.0.0.0"
+      WEB_PORT: 8080
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "timeout", "5s", "sh", "-c", "</dev/tcp/localhost/50051"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - clickhouse-network
+
 networks:
   clickhouse-network:
     driver: bridge
