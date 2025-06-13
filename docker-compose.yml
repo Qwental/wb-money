@@ -1,0 +1,89 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.8
+    container_name: wb-money-clickhouse
+    hostname: clickhouse
+    ports:
+      - "8123:8123"  # HTTP порт
+      - "9000:9000"  # Native порт
+    volumes:
+      - ./clickhouse-db/data:/var/lib/clickhouse
+      - ./clickhouse-db/logs:/var/log/clickhouse-server
+      - ./clickhouse-db/config:/etc/clickhouse-server/config.d
+      - ./clickhouse-db/users:/etc/clickhouse-server/users.d
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ""
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - clickhouse-network
+
+  money-service:
+    build:
+      context: ./money-count-service
+      dockerfile: Dockerfile
+    container_name: wb-money-service
+    hostname: money-service
+    ports:
+      - "50051:50051"  # gRPC порт
+      - "8080:8080"    # gRPC-Web порт для фронтенда
+    environment:
+      # Настройки для подключения к ClickHouse
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 9000
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ""
+      # Настройки gRPC сервера
+      GRPC_PORT: 50051
+      GRPC_HOST: "0.0.0.0"
+      WEB_PORT: 8080
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "timeout", "5s", "sh", "-c", "</dev/tcp/localhost/50051" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - clickhouse-network
+      - app-network
+
+
+  money-count-service-frontend:
+    build:
+      context: ./money-count-service-frontend
+      dockerfile: Dockerfile
+    container_name: wb-money-frontend
+    hostname: frontend
+    ports:
+      - "3000:3000"  # Порт для фронтенда
+    environment:
+      - NODE_ENV=development
+      - USE_MOCKS=false  # Отключение моков для работы с бэкендом
+      - GRPC_WEB_HOST=money-service  # Хост бэкенда
+      - GRPC_WEB_PORT=8080  # Порт gRPC-Web
+    volumes:
+      - ./money-count-service-frontend:/app
+      - /app/node_modules
+    command: npm start
+    networks:
+     - app-network
+networks:
+  clickhouse-network:
+    driver: bridge
+  app-network:
+    driver: bridge

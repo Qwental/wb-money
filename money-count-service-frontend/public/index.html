@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WB Кошелек - Ваша экономия</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="logo">WB 💰</div>
+    <div class="subtitle">Узнайте, сколько вы могли бы сэкономить с WB Кошельком</div>
+
+    <div class="input-group">
+      <label for="userId">Ваш ID пользователя:</label>
+      <input type="number" id="userId" placeholder="Например: 1342" min="1">
+    </div>
+
+    <button class="btn" id="calculateBtn">
+      Рассчитать экономию
+    </button>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Подсчитываем вашу экономию...</p>
+    </div>
+
+    <div class="error" id="error"></div>
+
+    <div class="result" id="result">
+      <div class="savings-amount" id="savingsAmount">0 ₽</div>
+      <div class="savings-text">вы могли бы сэкономить, используя WB Кошелек</div>
+    </div>
+
+    <div class="stats" id="stats">
+      <div class="stat-item">
+        <div class="stat-value" id="totalOrders">0</div>
+        <div class="stat-label">Всего заказов</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalSpent">0 ₽</div>
+        <div class="stat-label">Заказы оплаченные WB-кошельком</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/proto/grpc_bundle.js"></script>
+  <script src="/js/app.js"></script>
+
+<!--  <script src="/js/grpc_client.js"></script>-->
+<!--  <script src="/js/app.js"></script>-->
+<!--  <script src="/js/logger.js"></script>-->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('calculateBtn');
+      if (!btn) {
+        console.error('❌ Кнопка calculateBtn не найдена!');
+      } else {
+        console.log('✅ Кнопка найдена, навешиваем обработчик');
+        btn.addEventListener('click', () => {
+          console.log('👆 Кнопка нажата!');
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

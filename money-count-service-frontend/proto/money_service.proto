@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package money_service;
+
+option go_package = "./pkg/proto";
+
+service MoneyService {
+  rpc GetSavings(GetSavingsRequest) returns (GetSavingsResponse);
+}
+
+message GetSavingsRequest {
+  int64 user_id = 1;
+}
+
+message GetSavingsResponse {
+  enum Status {
+    OK = 0;                      // success
+    USER_NOT_FOUND = 1;
+    NO_PURCHASES = 2;            // нет покупок у пользователя
+    DB_ERROR = 3;                // ошибка бд
+    INVALID_REQUEST = 4;         // Некорректный запрос
+    UNAUTHORIZED = 5;            // Нет доступа к данным пользователя
+    UNKNOWN_ERROR = 6;           // Неизвестная ошибка
+  }
+  Status status = 1;
+  double total_savings = 2;         // Итоговая сумма сэкономленных денег (может быть отрицательной)
+  string currency = 3;
+  int32 total_purchases = 4;        // Количество всех покупок
+  int32 wb_card_purchases = 5;      // Кол-во покупок, совершенных картой WB
+  string message = 6;               // Доп. сообщение
+}
