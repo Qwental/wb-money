@@ -1,13 +1,11 @@
-// 💡 Создаём gRPC клиент
 const client = new proto.money_service.MoneyServiceClient("http://localhost:3000/grpc");
 
-// 🎯 Основная логика
 document.addEventListener('DOMContentLoaded', () => {
     const calculateBtn = document.getElementById('calculateBtn');
     const userIdInput = document.getElementById('userId');
 
     if (!calculateBtn || !userIdInput) {
-        console.error('❌ Элементы кнопки или input не найдены!');
+        console.error('Элементы кнопки или input не найдены!');
         return;
     }
 
@@ -16,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') calculateSavings();
     });
 
-    console.log('✅ Приложение инициализировано');
+    console.log('Приложение инициализировано');
 });
 
 async function calculateSavings() {
@@ -89,7 +87,6 @@ function getSavings(userId) {
     });
 }
 
-// Преобразуем числовой статус в читаемое название
 function getStatusName(statusCode) {
     const statusMap = {
         0: 'OK',
@@ -103,12 +100,12 @@ function getStatusName(statusCode) {
     return statusMap[statusCode] || 'UNKNOWN_STATUS';
 }
 
-// Возвращаем человекочитаемое сообщение об ошибке
 function getErrorMessage(status, serverMessage) {
     const errorMessages = {
         'USER_NOT_FOUND': 'Ошибка:',
         'NO_PURCHASES': 'У пользователя нет покупок',
-        'DB_ERROR': 'Ошибка базы данных',
+        'DB_ERROR': 'Ошиб' +
+            'ка базы данных',
         'INVALID_REQUEST': 'Некорректный запрос',
         'UNAUTHORIZED': 'Нет доступа к данным пользователя',
         'UNKNOWN_ERROR': 'Неизвестная ошибка'

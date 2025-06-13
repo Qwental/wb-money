@@ -6,7 +6,6 @@ import (
 )
 
 func NewClickHouseDB(url string) (*sqlx.DB, error) {
-	// Instead of sql.Open(), use sqlx.Open()
 	db, err := sqlx.Open("clickhouse", url)
 	if err != nil {
 		return nil, err

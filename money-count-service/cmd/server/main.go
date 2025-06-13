@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	grpcPort = ":50051" // оригинальный (tcp)
+	grpcPort = ":50051" // tcp
 	webPort  = ":8080"  // для фронта
 	dsn      = "clickhouse://localhost:9000/default"
 )
@@ -35,10 +35,10 @@ func main() {
 	proto.RegisterMoneyServiceServer(grpcServer, h)
 	reflection.Register(grpcServer)
 
-	// 👇 gRPC-Web обёртка
+	// gRPC-Web обёртка
 	wrappedGrpc := grpcweb.WrapServer(grpcServer)
 
-	// 👇 HTTP сервер
+	// HTTP сервер
 	httpServer := &http.Server{
 		Addr: webPort,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +50,7 @@ func main() {
 		}),
 	}
 
-	// 🎧 Запускаем слушание TCP для обычного gRPC (для отладки и grpcurl)
+	// Запускаем слушание TCP для обычного gRPC
 	go func() {
 		lis, err := net.Listen("tcp", grpcPort)
 		if err != nil {
