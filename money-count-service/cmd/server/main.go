@@ -6,6 +6,7 @@ import (
 	"github.com/Qwental/wb-money/internal/handler"
 	"github.com/Qwental/wb-money/internal/service"
 	"github.com/Qwental/wb-money/pkg/proto"
+	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"os"
@@ -49,8 +50,8 @@ func buildDSN() string {
 func main() {
 	// Конфигурация из переменных окружения
 	grpcHost := getEnv("GRPC_HOST", defaultHost)
-	grpcPort := getEnv("GRPC_PORT", "50051")
-	webPort := getEnv("WEB_PORT", "8080")
+	grpcPort := getEnv("GRPC_PORT", defaultGrpcPort)
+	webPort := getEnv("WEB_PORT", defaultWebPort)
 
 	grpcAddr := fmt.Sprintf("%s:%s", grpcHost, grpcPort)
 	webAddr := fmt.Sprintf("%s:%s", grpcHost, webPort)
@@ -67,7 +68,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to ClickHouse: %v", err)
 	}
-	defer db.Close()
+	defer func(db *sqlx.DB) {
+		err := db.Close()
+		if err != nil {
+			log.Fatalf("Failed to close ClickHouseDB: %v", err)
+		}
+	}(db)
 
 	log.Printf("Successfully connected to ClickHouse")
 
@@ -108,7 +114,10 @@ func main() {
 				// Для обычных HTTP запросов можно добавить health check
 				if r.URL.Path == "/health" {
 					w.WriteHeader(http.StatusOK)
-					w.Write([]byte("OK"))
+					_, err := w.Write([]byte("OK"))
+					if err != nil {
+						return
+					}
 					return
 				}
 				http.NotFound(w, r)

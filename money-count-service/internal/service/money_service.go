@@ -66,7 +66,12 @@ func (s *MoneyService) GetSavings(ctx context.Context, userID uint64) (*proto.Ge
 			Message: "Ошибка получения данных о покупках",
 		}, nil
 	}
-	defer rows.Close()
+	defer func(rows *sqlx.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Printf("error closing rows: %v", err)
+		}
+	}(rows)
 
 	var (
 		totalSavings      float64
