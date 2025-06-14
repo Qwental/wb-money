@@ -1,7 +1,8 @@
-# wb-money
-Тестовое задание от Wildberries &amp; Russ. Внутренняя аналитика Портала Продавцов.
+# Тестовое задание от Wildberries & Russ. Внутренняя аналитика Портала Продавцов.
+
 ### Выполнил: Бугренков Владимир Петрович
 #### Ссылка на репозиторий: https://github.com/Qwental/wb-money
+#### демонстрация: в виде скриншотов
 
 
 **Вопрос 1. Предложите несколько продуктовых фичей, которые помогут развивать WB Кошелёк как способ оплаты.**
@@ -9,7 +10,7 @@
 Основные фичи, которые я могу предложить:
 1. ФИЧА №1: Сделать баннер, который будет интегрирован в мобильном приложении и на сайт WB, в котором будем писать пользователю сколько пользователь сэкономил бы денег, если бы он все покупки оплачивал с помощью WB-кошелька. Таким образом, у пользователя может появиться чувство FOMO (fear of missing out), и он с большим шансом решит оформить WB-кошелек, чтобы больше не терять выгоду. Данную фичу я реализовал на микросервисах; код, архитектура решения, обоснование принятых решений, перспективы развития(что можно улучшить и доработать) и инструкция по развертыванию и запуску есть далее по тексту.
    Пример работы баннера. (Пример сделан на основе сгенерерованных данных).
-   ![Screenshot of wb-money](images_for_readme/Pasted%20image%2020250614003126.png)
+   ![Screenshot of wb-money](images_for_readme/1.png)
 2. ФИЧА №2: Геймификация: Например каждые N заказов оплаченных WB-кошельком увеличивать проценты кешбека. Тем самым пользователь будет хотеть все больше и больше тратиться на покупки, чтобы повышать свой кешбек. Данная фича может быть реализуема, только если разрешат пользователям повышать кешбек больше 3%
 3. ФИЧА №3: Кешбек-бустер: Для новых пользователей повышать временно кешбек по WB-кошельку, например до 5%. При этом должно учитывается, что один человек может завести один WB-кошелек, чтобы не было ситуации, что пользователь будет создавать кучу новых аккаунтов.
 4. ФИЧА №4: Фича по ТЗ, сделать использование WB-кошелька способом оплаты по умолчанию.
@@ -101,7 +102,7 @@ ON open_app.user_id = buy.user_id
 Прежде чем разобрать нереализованные фичи 2-4, расскажу о  реализованном Баннере
 
 ## Микросервисная Архитектура баннера
-![Screenshot of wb-money](images_for_readme/Pasted%20image%20250614021725.png)
+![Screenshot of wb-money](images_for_readme/2.png)
 
 
 Рассказать про сервисы. Что делают. Как общаются. В каких контейнерах крутятся.
@@ -161,7 +162,7 @@ message GetSavingsResponse {
 
 
 Работа контейнеров:
-![Screenshot of wb-money](images_for_readme/Pasted%20image%20250614022236.png)
+![Screenshot of wb-money](images_for_readme/3.png)
 
 
 ## Структура проекта и репозитория
@@ -170,11 +171,11 @@ message GetSavingsResponse {
 
 
 ## Архитектура С4 Баннера
-![Screenshot of wb-money](images_for_readme/Pasted%20image%20250614032811.png)
+![Screenshot of wb-money](images_for_readme/4.png)
 
-![Screenshot of wb-money](images_for_readme/Pasted%20image%20250614032827.png)
+![Screenshot of wb-money](images_for_readme/5.png)
 
-![Screenshot of wb-money](images_for_readme/Pasted%20image%20250614034305.png)
+![Screenshot of wb-money](images_for_readme/6.png)
 
 
 
@@ -210,9 +211,9 @@ message GetSavingsResponse {
 
 ## Скриншоты взаимодействия с Баннером
 
-![Screenshot of wb-money](images_for_readme/Pasted%20image%20250614022326.png)
-![Screenshot of wb-money](images_for_readme/Pasted%20image%20250614022352.png)
-![Screenshot of wb-money](images_for_readme/Pasted%20image%20250614022406.png)
+![Screenshot of wb-money](images_for_readme/7.png)
+![Screenshot of wb-money](images_for_readme/8.png)
+![Screenshot of wb-money](images_for_readme/9.png)
 
 
 # Вернемся к фичам 2-4
