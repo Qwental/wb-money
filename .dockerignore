@@ -17,10 +17,6 @@ docs/
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-logs/
-
 # Build artifacts
 bin/
 dist/
@@ -50,3 +46,4 @@ Makefile
 # Temporary files
 tmp/
 temp/
+.idea

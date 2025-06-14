@@ -28,7 +28,6 @@ rm -f "$GEN_DIR"/*.js 2>/dev/null || true
 echo -e "Генерация из локального proto-файла:"
 protoc \
   -I=proto \
-  --js_out=import_style=commonjs,binary:"$GEN_DIR" \
   --grpc-web_out=import_style=commonjs,mode=grpcwebtext:"$GEN_DIR" \
   "$PROTO_FILE"
 
